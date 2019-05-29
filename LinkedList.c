@@ -4,10 +4,11 @@
 *
 ********************/
 
-#include<stdio.h>
-#include<stdlib.h>
-#include<assert.h>
-#include<string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <string.h>
+#include <stdbool.h>
 
 #define BUFFER_SIZE 256
 
@@ -16,7 +17,7 @@ struct Node_t_t
 {
     char *value;
     struct Node_t_t * next;
-}
+};
 
 //create the shortform
 
@@ -25,8 +26,8 @@ typedef struct Node_t_t Node_t;
 //function templates
 Node_t *newNode(const char *value, Node_t *next);
 Node_t *deleteNode(Node_t *current, char **value);
-bool pop(Node_t **head,char **value);
-bool push(Node_t **head,const char *value);
+bool pop(Node_t **head, char **value);
+bool push(Node_t **head, const char *value);
 
 /*use void as parameters to silence the gcc warnings*/
 int main(void)
@@ -38,18 +39,23 @@ int main(void)
     //fill our stack from the user input
     while(1==scanf("%s",buffer))
     {
-        push(&Stack,buffer);
+        push(&Stack, buffer);
     }
+
     //write out the sentence in reverse order
     while(Stack != NULL)
     {
-        char *str = pop(&Stack);
-        if(str)
+        char *str = NULL;
+        bool popped = pop(&Stack, &str);
+
+        if(popped && NULL != str )
         {
-            printf("%s",str);
+            printf("%s ", str);
             free(str);
         }
+            
     }
+    printf("\n");
     return EXIT_SUCCESS;
 }
 /**********
@@ -58,13 +64,23 @@ int main(void)
 
 /**
 *return a NULL pointer if it failed to allocate memory
-*makes a copy of the string`value` on the heap(see strdup())
+*makes a copy of the string `value` on the heap(see strdup())
 *and stores the pointer in the newly created Node.
 *sets the next node to be the parameter`next`
 */
 Node_t *newNode(const char *value, Node_t *next)
 {
-    return NULL;
+    Node_t *newNode = (Node_t*) malloc(sizeof(Node_t));
+
+    if(newNode == NULL)
+    {
+        return NULL;
+    }
+    char* target = strdup(value);
+    
+    newNode -> value = target;
+    newNode -> next = next;
+    return newNode;
 }
 
 /**
@@ -73,8 +89,11 @@ Node_t *newNode(const char *value, Node_t *next)
 *and return the next node.
 */
 Node_t *deleteNode(Node_t *current, char **value)
-{
-    return NULL;
+{   
+    *value = current -> value;
+    Node_t *next = current -> next; 
+    free(current);
+    return next;  
 }
 
 /**
@@ -84,7 +103,13 @@ Node_t *deleteNode(Node_t *current, char **value)
 *return true on success
 */
 bool pop(Node_t **Stack, char**value)
-{
+{ 
+    if(Stack != NULL)
+    {
+        Node_t * pop = deleteNode(*Stack, value);
+        *Stack = pop;
+        return true;
+    }
     return false;
 }
 /**
@@ -92,7 +117,15 @@ bool pop(Node_t **Stack, char**value)
 *update the top of the stack
 *return true if everything is successfull
 */
-bool push(Node_t **Stack,constchar *value)
-{
+bool push(Node_t **Stack, const char *value)
+{   
+    Node_t * new = newNode(value, *Stack);
+    if(new != NULL)
+    {
+      *Stack = new; 
+      return true;
+    }
+
     return false;
 }
+   
