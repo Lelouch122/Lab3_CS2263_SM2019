@@ -1,4 +1,31 @@
-# TODO: add targets to compile LinkedList.c
-# TODO: add a target for each .input file in the Data directory to run the compiled LinkedList 
-#                        program with the tests in  ./Data
-# TODO: add a target that can run all the tests above.
+
+
+#########################################
+# Created by Jean-Philippe Legault and Kayla Hawkins
+#
+# This is a comment, a comment always start with `#`
+# Indentation is primordial in a Makefile.
+# the steps for a target are always indented
+#
+##########################################
+
+
+# compile with gcc, change this to clang if you prefer
+COMPILER = gcc
+
+# The C flags to pass to gcc
+C_FLAGS = -Wall -Wextra -std=c99
+
+# prepend the command with '@' so that Make does not print the command before running it 
+help:
+	@printf "available command:\n"
+	@printf "	make help               (this command)\n"
+	@printf "	make LinkedList         (to build your C program)\n"
+
+# link our .o files to make an executable
+LinkedList: LinkedList.o
+	$(COMPILER) $(C_FLAGS) -o LinkedList LinkedList.o 
+
+# compile the `Stack.o` file
+LinkedList.o: LinkedList.c
+	$(COMPILER) $(C_FLAGS) -c LinkedList.c
